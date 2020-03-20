@@ -21,8 +21,13 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Window.h"
+#include "Vector3.h"
+#include "Matrix.h"
+#include "Camera.h"
+#include "math_t.h"
 
 using namespace std;
+using namespace Editor;
 
 const float toRadians = (float)M_PI / 180.0f;
 
@@ -70,7 +75,7 @@ void create_shaders()
 		shaders.push_back(shader);
 }
 
-int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int main(int argc, char **argv)
 {
     // Setup window
     glfwSetErrorCallback(error_callback);
@@ -105,16 +110,48 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     bool show_test_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImColor(32, 32, 32);
+	Editor::Vector3 vec3 = Editor::Vector3(1, 2, 3);
+	std::cout << "test" << std::endl;
+	std::cout << vec3.getValue(1) << std::endl;
 
+	Editor::Matrix mat = Editor::Matrix();
     // Main loop
     while (!window.getShouldClose())
     {
         glfwPollEvents();
         ImGui_ImplGlfwGL3_NewFrame();
 
+		// Create the root fullscreen window.
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar |
+			ImGuiWindowFlags_NoResize |
+			ImGuiWindowFlags_NoMove |
+			ImGuiWindowFlags_NoScrollbar |
+			ImGuiWindowFlags_MenuBar |
+			ImGuiWindowFlags_NoCollapse;
+		ImGui::SetNextWindowSize(ImVec2(window.getWidth(),window.getHeight()));
+		ImGui::SetNextWindowPos(ImVec2(0, 0));
+		ImGui::Begin("Goxel", NULL, window_flags);
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				}
+				if (ImGui::MenuItem("Save as")) {
+				}
+				if (ImGui::MenuItem("Load", "Ctrl+O")) {
+				}
+				if (ImGui::BeginMenu("Export As..")) {
+
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+		ImGui::End();
+
         // 1. Show a simple window
         // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
-        {
+        /*{
             static float f = 0.0f;
             ImGui::Text("Hello, world!");
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
@@ -123,23 +160,23 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (ImGui::Button("Another Window")) show_another_window ^= 1;
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::Text("Error: %s", Log::getMessage());
-        }
+        }*/
 
         // 2. Show another simple window, this time using an explicit Begin/End pair
-        if (show_another_window)
+      /*  if (show_another_window)
         {
             ImGui::SetNextWindowSize(ImVec2(200,100), ImGuiSetCond_FirstUseEver);
             ImGui::Begin("Another Window", &show_another_window);
             ImGui::Text("Hello");
             ImGui::End();
-        }
+        }*/
 
         // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-        if (show_test_window)
+        /*if (show_test_window)
         {
             ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
             ImGui::ShowTestWindow(&show_test_window);
-        }
+        }*/
 
         // Rendering
 		int width, height;
@@ -159,8 +196,11 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		uniform_model = shader->getModelLocation();
 		uniform_projection = shader->getProjectionLocation();
 
+		Camera camera = Camera();
+		mat4_t mat4 =  mat4_perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
+		camera.setProjMatrixVert(45.0f, (GLfloat)width / (GLfloat)height, 0.1, 100);
 		glm::mat4 projection = glm::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
-
+		projection[3][2] = camera.mProjMatrix.mT.mZ;
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 0.4f));
@@ -175,6 +215,8 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         ImGui::Render();
 
 		window.swapBuffers();
+
+		
     }
 
     // Cleanup

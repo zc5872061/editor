@@ -18,7 +18,8 @@ public:
 
 	bool getShouldClose() { return glfwWindowShouldClose(window); }
 	void swapBuffers() { glfwSwapBuffers(window); }
-
+	GLint getWidth() { return width; }
+	GLint getHeight() { return height; }
 private:
 	GLFWwindow *window;
 	GLint width, height;
