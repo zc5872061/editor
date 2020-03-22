@@ -60,10 +60,10 @@
     <ClCompile Include="math_t.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.c">
+    <ClCompile Include="editor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="editor.c">
+    <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

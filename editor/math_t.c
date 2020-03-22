@@ -27,7 +27,7 @@ vec3_t vec3_mul(vec3_t v, float s)
 
 float vec3_dot(vec3_t v1, vec3_t v2)
 {
-	return v1.x * v2.x + v1.y * v2.y + v1.z + v2.z;
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 vec3_t vec3_div(vec3_t v, float s)
@@ -89,20 +89,20 @@ mat4_t mat4_lookat(vec3_t eye, vec3_t target, vec3_t up)
 	mat4_t m = mat4_identity();
 
 	m.m[0][0] = x_axis.x;
-	m.m[0][1] = x_axis.y;
-	m.m[0][2] = x_axis.z;
+	m.m[1][0] = x_axis.y;
+	m.m[2][0] = x_axis.z;
 
-	m.m[1][0] = y_axis.x;
+	m.m[0][1] = y_axis.x;
 	m.m[1][1] = y_axis.y;
-	m.m[1][2] = y_axis.z;
+	m.m[2][1] = y_axis.z;
 
-	m.m[2][0] = z_axis.x;
-	m.m[2][1] = z_axis.y;
+	m.m[0][2] = z_axis.x;
+	m.m[1][2] = z_axis.y;
 	m.m[2][2] = z_axis.z;
 
-	m.m[0][3] = -vec3_dot(x_axis, eye);
-	m.m[1][3] = -vec3_dot(y_axis, eye);
-	m.m[2][3] = -vec3_dot(z_axis, eye);
+	m.m[3][0] = -vec3_dot(x_axis, eye);
+	m.m[3][1] = -vec3_dot(y_axis, eye);
+	m.m[3][2] = -vec3_dot(z_axis, eye);
 
 	return m;
 }
@@ -187,8 +187,8 @@ mat4_t mat4_perspective(float fovy, float aspect, float near, float far) {
 	m.m[0][0] = f / aspect;
 	m.m[1][1] = f;
 	m.m[2][2] = -(near + far) / z_range;
-	m.m[2][3] = -2 * near * far / z_range;
-	m.m[3][2] = -1;
+    m.m[2][3] = -1;
+	m.m[3][2] = -2 * near * far / z_range;
 	m.m[3][3] = 0;
 	return m;
 }
